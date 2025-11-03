@@ -1,84 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CrispyPDF - Free PDF Compression Tool</title>
-    <meta name="description" content="Compress PDF files for free with CrispyPDF. Reduce file size while maintaining quality. Fast, secure, and easy to use.">
-    
-    <!-- Favicon - Replace with your logo -->
-    <link rel="icon" type="image/png" href="assets/favicon.webp">
-    <link rel="apple-touch-icon" href="assets/favicon.webp">
-    
+     <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CrispyPDF - AI-Powered PDF Compressor | Free Online PDF Compression Tool</title>
+  <!-- 🔹 Meta Description -->
+  <meta name="description" content="CrispyPDF is a free AI-powered online PDF compressor that reduces file size while keeping quality perfect. Compress, optimize, and shrink PDF files instantly — fast, secure, and free forever.">
+
+  <!-- 🔹 High-Value SEO Keywords -->
+  <meta name="keywords" content="AI PDF compressor, compress PDF online, reduce PDF size, free PDF compressor, online PDF optimizer, smart PDF compression, PDF shrinker, PDF size reducer, AI compression tool, fast PDF compressor, best PDF compressor, optimize PDF, PDF reducer free">
+
+  <!-- 🔹 Author -->
+  <meta name="author" content="CrispyPDF Team" />
+
+  <!-- 🔹 Robots -->
+  <meta name="robots" content="index, follow" />
+
+  <!-- 🔹 Canonical URL -->
+  <link rel="canonical" href="https://domain.com/" />
+
+    <link rel="icon" type="image/webp" href="assets/favicon.webp">
+
+    <!-- 🔹 Open Graph (for Facebook, LinkedIn) -->
+  <meta property="og:title" content="CrispyPDF - AI-Powered PDF Compression" />
+  <meta property="og:description" content="Compress PDFs with AI precision — smallest size, perfect clarity, totally free." />
+  <meta property="og:image" content="https://yourdomain.com/assets/logo1.webp" />
+  <meta property="og:url" content="https://yourdomain.com/" />
+  <meta property="og:type" content="website" />
+
+  <!-- 🔹 Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CrispyPDF - AI-Powered PDF Compression" />
+  <meta name="twitter:description" content="Experience next-gen smart PDF compression powered by AI. Free, fast, and secure." />
+  <meta name="twitter:image" content="https://yourdomain.com/assets/logo1.webp" />
+
+  <!-- 🔹 Structured Data for Google -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "CrispyPDF",
+    "url": "https://yourdomain.com/",
+    "description": "AI-powered online PDF compression tool that delivers high-quality results instantly.",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "All",
+    "creator": {
+      "@type": "Organization",
+      "name": "CrispyPDF"
+    },
+    "keywords": "AI PDF compressor, compress PDF online, reduce PDF size, free PDF compressor, smart PDF optimizer"
+  }
+  </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header class="header">
         <div class="logo-container">
-            <div class="logo">
-                <img src="assets/cplogo.webp" alt="CrispyPDF Logo" class="logo-image">
+            <a href="/" class="logo">
+                <img src="assets/logo-light.webp" alt="CrispyPDF Logo" class="logo-image" id="logoImage">
+               
+            </a>
+            <div class="header-right">
+                <nav class="nav">
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#how" class="nav-link">How It Works</a>
+                </nav>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
             </div>
-            <nav class="nav">
-                <a href="#features" class="nav-link">Features</a>
-                <a href="#how-it-works" class="nav-link">How It Works</a>
-            </nav>
         </div>
     </header>
 
     <div class="container">
         <div class="main-card">
             <div class="hero-section">
-                <h1 class="title">Compress PDFs with CrispyPDF</h1>
-                <p class="subtitle">Make your PDFs crisp, light, and optimized. Free forever.</p>
+                <h1 class="title"><i class="fas fa-robot"></i> AI-Powered PDF Compression</h1>
+<p class="subtitle">Experience next-gen smart compression — powered by AI for optimal quality and smallest file size.</p>
+
+            </div>
+
+            <div class="bulk-mode-toggle">
+                <label class="bulk-checkbox">
+                    <input type="checkbox" id="bulkMode">
+                    <span><i class="fas fa-layer-group"></i> Bulk Upload Mode</span>
+                </label>
             </div>
 
             <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">📁</div>
+                <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
                 <div class="upload-text">Click to upload or drag and drop</div>
-                <div class="upload-hint">PDF files only (Max 50MB)</div>
+                <div class="upload-hint">PDF files only (Max 50MB per file)</div>
                 <input type="file" id="fileInput" class="file-input" accept=".pdf">
             </div>
 
+            <div class="file-list" id="fileList"></div>
+
             <div class="file-info" id="fileInfo">
                 <div class="file-details">
-                    <div class="file-name">
-                        <span>📄</span>
-                        <span id="fileName">document.pdf</span>
-                    </div>
-                    <div class="file-size" id="fileSize">0 MB</div>
+                    <span class="file-name"><i class="fas fa-file-pdf"></i> <span id="fileName">document.pdf</span></span>
+                    <span class="file-size" id="fileSize">0 MB</span>
                 </div>
             </div>
 
             <div class="quality-section" id="qualitySection">
-                <label class="form-label">Select Compression Quality:</label>
+                <label class="form-label"><i class="fas fa-sliders-h"></i> Choose Compression Quality</label>
                 <div class="quality-options">
                     <label class="quality-option">
-                        <input type="radio" name="quality" value="extreme">
-                        <span class="quality-label">🔥 Extreme</span>
-                        <span class="quality-desc">Maximum compression</span>
+                        <input type="radio" name="quality" value="screen" checked>
+                        <span class="quality-label"><i class="fas fa-tachometer-alt"></i> High</span>
+                        <span class="quality-desc">Smallest size, lower quality</span>
                     </label>
                     <label class="quality-option selected">
-                        <input type="radio" name="quality" value="recommended" checked>
-                        <span class="quality-label">⚡ Recommended</span>
-                        <span class="quality-desc">Best balance</span>
+                        <input type="radio" name="quality" value="ebook">
+                        <span class="quality-label"><i class="fas fa-balance-scale"></i> Medium</span>
+                        <span class="quality-desc">Balanced size and quality</span>
                     </label>
                     <label class="quality-option">
-                        <input type="radio" name="quality" value="low">
-                        <span class="quality-label">✨ Light</span>
-                        <span class="quality-desc">Keep quality</span>
+                        <input type="radio" name="quality" value="printer">
+                        <span class="quality-label"><i class="fas fa-star"></i> Low</span>
+                        <span class="quality-desc">Best quality, larger size</span>
                     </label>
                 </div>
-              
-<div class="swipe-container" id="swipeContainer">
-    <div class="swipe-track">
-        <div class="swipe-button" id="swipeButton">
-            <span class="swipe-arrow">→</span>
-        </div>
-    </div>
-    <div class="swipe-text">Swipe to Compress</div>
-</div>
+            </div>
 
-
+            <div class="swipe-container" id="swipeContainer">
+                <div class="swipe-track">
+                    <div class="swipe-button" id="swipeButton">
+                        <span class="swipe-arrow"><i class="fas fa-arrow-right"></i></span>
+                    </div>
+                    <div class="swipe-text">Swipe to Compress <i class="fas fa-chevron-right"></i></div>
+                </div>
             </div>
 
             <div class="progress-section" id="progressSection">
@@ -89,7 +142,7 @@
             </div>
 
             <div class="result-section" id="resultSection">
-                <div class="success-message">✅ PDF Compressed Successfully!</div>
+                <div class="success-message"><i class="fas fa-check-circle"></i> Compression Complete!</div>
                 <div class="result-stats">
                     <div class="stat">
                         <div class="stat-label">Original Size</div>
@@ -104,68 +157,63 @@
                         <div class="stat-value stat-value-success" id="savedPercent">0%</div>
                     </div>
                 </div>
-                <button class="btn btn-primary" id="downloadBtn">
-                    ⬇️ Download Compressed PDF
-                </button>
-                <button class="btn btn-secondary" id="resetBtn">
-                    🔄 Compress Another File
-                </button>
+                <button class="btn btn-primary" id="downloadBtn"><i class="fas fa-download"></i> Download Compressed PDF</button>
+                <button class="btn btn-secondary" id="resetBtn"><i class="fas fa-redo"></i> Compress Another</button>
             </div>
         </div>
 
-        <!-- Features Section -->
-        <div class="features-section" id="features">
+        <section class="features-section" id="features">
             <h2 class="section-title">Why Choose CrispyPDF?</h2>
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
+  <div class="feature-icon"><i class="fas fa-brain"></i></div>
+  <h3 class="feature-title">AI-Smart Compression</h3>
+  <p class="feature-desc">Our AI analyzes each page to preserve clarity while drastically reducing file size.</p>
+</div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
                     <h3 class="feature-title">100% Secure</h3>
-                    <p class="feature-desc">Your files are processed locally and never stored on our servers.</p>
+                    <p class="feature-desc">Your files are processed securely and deleted immediately after compression.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h3 class="feature-title">Lightning Fast</h3>
-                    <p class="feature-desc">Compress PDFs in seconds with powerful Ghostscript technology.</p>
+                    <div class="feature-icon"><i class="fas fa-infinity"></i></div>
+                    <h3 class="feature-title">Unlimited Use</h3>
+                    <p class="feature-desc">Compress as many PDFs as you want, completely free forever.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">💯</div>
-                    <h3 class="feature-title">Free Forever</h3>
-                    <p class="feature-desc">No limits, no subscriptions. Completely free to use.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📱</div>
-                    <h3 class="feature-title">Mobile Friendly</h3>
-                    <p class="feature-desc">Works perfectly on desktop, tablet, and mobile devices.</p>
+                    <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
+                    <h3 class="feature-title">Bulk Compression</h3>
+                    <p class="feature-desc">Upload multiple PDFs at once and download them as a convenient ZIP file.</p>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- How It Works -->
-        <div class="how-section" id="how-it-works">
+        <section class="how-section" id="how">
             <h2 class="section-title">How It Works</h2>
             <div class="steps-grid">
                 <div class="step">
                     <div class="step-number">1</div>
-                    <h3 class="step-title">Upload PDF</h3>
-                    <p class="step-desc">Click or drag your PDF file</p>
+                    <h3 class="step-title">Upload</h3>
+                    <p class="step-desc">Select your PDF file or drag and drop</p>
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
-                    <h3 class="step-title">Choose Quality</h3>
-                    <p class="step-desc">Select compression level</p>
+                    <h3 class="step-title">Choose</h3>
+                    <p class="step-desc">Select compression quality level</p>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
                     <h3 class="step-title">Compress</h3>
-                    <p class="step-desc">Let CrispyPDF optimize it</p>
+                    <p class="step-desc">Swipe to start compression</p>
                 </div>
                 <div class="step">
                     <div class="step-number">4</div>
                     <h3 class="step-title">Download</h3>
-                    <p class="step-desc">Get your crispy PDF!</p>
+                    <p class="step-desc">Get your optimized PDF</p>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
 
     <footer class="footer">
@@ -174,18 +222,78 @@
                 <img src="assets/favicon.webp" alt="CrispyPDF" class="footer-logo-img">
                 <span>CrispyPDF</span>
             </div>
-            <p class="footer-tagline">Making PDFs crisp and light since 2025</p>
-            <p class="footer-copyright">© 2025 CrispyPDF. All rights reserved.</p>
+            <p class="footer-tagline">AI-powered PDF compression — smart, secure, and effortless.</p>
+
+            <p class="footer-copyright">&copy; 2025 CrispyPDF. All rights reserved.</p>
             <div class="footer-links">
-                <a href="#" class="footer-link">Privacy</a>
-                <span>•</span>
-                <a href="#" class="footer-link">Terms</a>
-                <span>•</span>
-                <a href="#" class="footer-link">Contact</a>
+                <a href="#" class="footer-link" id="privacyLink"><i class="fas fa-lock"></i> Privacy Policy</a>
+                <span class="footer-divider">|</span>
+                <a href="#" class="footer-link" id="termsLink"><i class="fas fa-file-contract"></i> Terms of Service</a>
+                <span class="footer-divider">|</span>
+                <a href="mailto:maheshs2997@gmail.com" class="footer-link"><i class="fas fa-envelope"></i> maheshs2997@gmail.com</a>
             </div>
         </div>
     </footer>
 
+    <div class="modal" id="privacyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Privacy Policy</h2>
+                <button class="modal-close" id="closePrivacy">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Last Updated: November 2025</strong></p>
+                <h3>Information We Collect</h3>
+                <p>CrispyPDF processes your PDF files temporarily for compression purposes only. We do not store, share, or sell your files or personal information.</p>
+                <h3>How We Use Your Information</h3>
+                <p>Files uploaded to our service are processed immediately and deleted from our servers once the compression is complete. We do not retain any copies of your documents.</p>
+                <h3>Data Security</h3>
+                <p>We use industry-standard encryption and security measures to protect your files during the compression process. All transfers are conducted over secure HTTPS connections.</p>
+                <h3>Third-Party Services</h3>
+                <p>We do not share your data with any third-party services or advertisers.</p>
+                <h3>Your Rights</h3>
+                <p>You have full control over your files. Since we don't store your data, there's nothing to delete or modify after your compression session is complete.</p>
+                <h3>Contact Us</h3>
+                <p>If you have any questions about this Privacy Policy, please contact us at maheshs2997@gmail.com</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="termsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Terms of Service</h2>
+                <button class="modal-close" id="closeTerms">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Last Updated: November 2025</strong></p>
+                <h3>Acceptance of Terms</h3>
+                <p>By accessing and using CrispyPDF, you accept and agree to be bound by the terms and provisions of this agreement.</p>
+                <h3>Use License</h3>
+                <p>Permission is granted to temporarily use CrispyPDF for personal and commercial purposes. This service is provided free of charge.</p>
+                <h3>Restrictions</h3>
+                <p>You agree not to:</p>
+                <ul>
+                    <li>Attempt to reverse engineer or compromise the service</li>
+                    <li>Upload files containing illegal content, viruses, or malware</li>
+                    <li>Use the service to violate any laws or regulations</li>
+                    <li>Abuse the service through excessive automated requests</li>
+                </ul>
+                <h3>Disclaimer</h3>
+                <p>CrispyPDF is provided "as is" without any warranties. We do not guarantee that the service will be uninterrupted or error-free.</p>
+                <h3>Limitations of Liability</h3>
+                <p>CrispyPDF shall not be liable for any damages arising from the use or inability to use the service, including data loss or corruption.</p>
+                <h3>File Size Limits</h3>
+                <p>Individual PDF files are limited to 50MB per upload. Bulk uploads may have additional restrictions based on server capacity.</p>
+                <h3>Changes to Terms</h3>
+                <p>We reserve the right to modify these terms at any time. Continued use of the service constitutes acceptance of any changes.</p>
+                <h3>Contact</h3>
+                <p>For questions about these Terms of Service, contact us at maheshs2997@gmail.com</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrispyPDF - Free PDF Compression Tool</title>
+    <meta name="description" content="Compress PDF files for free with CrispyPDF. Reduce file size while maintaining quality. Fast, secure, and easy to use.">
+    
+    <!-- Favicon - Replace with your logo -->
+    <link rel="icon" type="image/png" href="assets/favicon.webp">
+    <link rel="apple-touch-icon" href="assets/favicon.webp">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo">
+                <img src="assets/cplogo.webp" alt="CrispyPDF Logo" class="logo-image">
+            </div>
+            <nav class="nav">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-card">
+            <div class="hero-section">
+                <h1 class="title">Compress PDFs with CrispyPDF</h1>
+                <p class="subtitle">Make your PDFs crisp, light, and optimized. Free forever.</p>
+            </div>
+
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Click to upload or drag and drop</div>
+                <div class="upload-hint">PDF files only (Max 50MB)</div>
+                <input type="file" id="fileInput" class="file-input" accept=".pdf">
+            </div>
+
+            <div class="file-info" id="fileInfo">
+                <div class="file-details">
+                    <div class="file-name">
+                        <span>📄</span>
+                        <span id="fileName">document.pdf</span>
+                    </div>
+                    <div class="file-size" id="fileSize">0 MB</div>
+                </div>
+            </div>
+
+            <div class="quality-section" id="qualitySection">
+                <label class="form-label">Select Compression Quality:</label>
+                <div class="quality-options">
+                    <label class="quality-option">
+                        <input type="radio" name="quality" value="extreme">
+                        <span class="quality-label">🔥 Extreme</span>
+                        <span class="quality-desc">Maximum compression</span>
+                    </label>
+                    <label class="quality-option selected">
+                        <input type="radio" name="quality" value="recommended" checked>
+                        <span class="quality-label">⚡ Recommended</span>
+                        <span class="quality-desc">Best balance</span>
+                    </label>
+                    <label class="quality-option">
+                        <input type="radio" name="quality" value="low">
+                        <span class="quality-label">✨ Light</span>
+                        <span class="quality-desc">Keep quality</span>
+                    </label>
+                </div>
+              
+<div class="swipe-container" id="swipeContainer">
+    <div class="swipe-track">
+        <div class="swipe-button" id="swipeButton">
+            <span class="swipe-arrow">→</span>
+        </div>
+    </div>
+    <div class="swipe-text">Swipe to Compress</div>
+</div>
+
+
+            </div>
+
+            <div class="progress-section" id="progressSection">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">Compressing... 0%</div>
+            </div>
+
+            <div class="result-section" id="resultSection">
+                <div class="success-message">✅ PDF Compressed Successfully!</div>
+                <div class="result-stats">
+                    <div class="stat">
+                        <div class="stat-label">Original Size</div>
+                        <div class="stat-value" id="originalSize">0 MB</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Compressed Size</div>
+                        <div class="stat-value" id="compressedSize">0 MB</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Space Saved</div>
+                        <div class="stat-value stat-value-success" id="savedPercent">0%</div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="downloadBtn">
+                    ⬇️ Download Compressed PDF
+                </button>
+                <button class="btn btn-secondary" id="resetBtn">
+                    🔄 Compress Another File
+                </button>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-section" id="features">
+            <h2 class="section-title">Why Choose CrispyPDF?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">100% Secure</h3>
+                    <p class="feature-desc">Your files are processed locally and never stored on our servers.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Lightning Fast</h3>
+                    <p class="feature-desc">Compress PDFs in seconds with powerful Ghostscript technology.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💯</div>
+                    <h3 class="feature-title">Free Forever</h3>
+                    <p class="feature-desc">No limits, no subscriptions. Completely free to use.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title">Mobile Friendly</h3>
+                    <p class="feature-desc">Works perfectly on desktop, tablet, and mobile devices.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="how-section" id="how-it-works">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps-grid">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Upload PDF</h3>
+                    <p class="step-desc">Click or drag your PDF file</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Choose Quality</h3>
+                    <p class="step-desc">Select compression level</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Compress</h3>
+                    <p class="step-desc">Let CrispyPDF optimize it</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3 class="step-title">Download</h3>
+                    <p class="step-desc">Get your crispy PDF!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="assets/favicon.webp" alt="CrispyPDF" class="footer-logo-img">
+                <span>CrispyPDF</span>
+            </div>
+            <p class="footer-tagline">Making PDFs crisp and light since 2025</p>
+            <p class="footer-copyright">© 2025 CrispyPDF. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy</a>
+                <span>•</span>
+                <a href="#" class="footer-link">Terms</a>
+                <span>•</span>
+                <a href="#" class="footer-link">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

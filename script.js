@@ -139,22 +139,28 @@ function handleFiles(files) {
 
     if (pdfFiles.length === 0) return;
 
+    // ✅ Always hide upload area once valid file(s) selected
+    uploadArea.style.display = 'none';
+
     if (isBulkMode) {
-        selectedFiles = [...selectedFiles, ...pdfFiles];
+        selectedFiles = [...pdfFiles];
         displayFileList();
-        qualitySection.classList.add('show');
-        swipeContainer.classList.add('show');
-        uploadArea.style.display = 'none';
+        fileInfo.style.display = 'none';
     } else {
         selectedFiles = [pdfFiles[0]];
         fileName.textContent = pdfFiles[0].name;
         fileSize.textContent = formatFileSize(pdfFiles[0].size);
+        fileInfo.style.display = 'block';
         fileInfo.classList.add('show');
-        qualitySection.classList.add('show');
-        swipeContainer.classList.add('show');
-        uploadArea.style.display = 'none';
     }
+
+    // ✅ Always reveal quality + swipe again
+    qualitySection.style.display = 'block';
+    swipeContainer.style.display = 'block';
+    qualitySection.classList.add('show');
+    swipeContainer.classList.add('show');
 }
+
 
 function displayFileList() {
     fileList.innerHTML = '';
@@ -402,18 +408,26 @@ function resetApp() {
     selectedFiles = [];
     compressedBlobs = [];
     fileInput.value = '';
-    fileInfo.classList.remove('show');
-    fileList.classList.remove('show');
-    qualitySection.classList.remove('show');
-    swipeContainer.classList.remove('show');
+
+    [fileInfo, fileList, qualitySection, swipeContainer, progressSection, resultSection].forEach(el => {
+        el.style.display = 'none';
+        el.classList.remove('show');
+    });
+
+    uploadArea.style.display = 'block';
+    uploadArea.classList.remove('dragover');
+
     swipeButton.style.left = '4px';
     swipeButton.style.pointerEvents = 'auto';
     swipeButton.classList.remove('completed');
-    progressSection.classList.remove('show');
-    resultSection.classList.remove('show');
-    uploadArea.style.display = 'block';
+    swipeButton.style.transition = 'all 0.3s ease';
     progressFill.style.width = '0%';
+    progressText.textContent = '';
+
+    isBulkMode = bulkModeCheckbox.checked;
 }
+
+
 
 function formatFileSize(bytes) {
     if (bytes === 0) return '0 Bytes';

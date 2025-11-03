@@ -28,6 +28,35 @@ const fileList = document.getElementById('fileList');
 const themeToggle = document.getElementById('themeToggle');
 const themeIcon = document.getElementById('themeIcon');
 const logoImage = document.getElementById('logoImage');
+// Toast system
+const toastContainer = document.createElement('div');
+toastContainer.id = 'toastContainer';
+toastContainer.style.position = 'fixed';
+toastContainer.style.bottom = '20px';
+toastContainer.style.right = '20px';
+toastContainer.style.zIndex = '9999';
+document.body.appendChild(toastContainer);
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.textContent = message;
+    toast.style.background = type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#ea215f';
+    toast.style.color = 'white';
+    toast.style.padding = '10px 14px';
+    toast.style.borderRadius = '6px';
+    toast.style.marginTop = '8px';
+    toast.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+    toast.style.fontWeight = '600';
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.3s ease';
+    toastContainer.appendChild(toast);
+    setTimeout(() => (toast.style.opacity = '1'), 50);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
+
 
 // Theme toggle
 const savedTheme = localStorage.getItem('theme') || 'light';
@@ -139,7 +168,6 @@ function handleFiles(files) {
 
     if (pdfFiles.length === 0) return;
 
-    // ✅ Always hide upload area once valid file(s) selected
     uploadArea.style.display = 'none';
 
     if (isBulkMode) {
@@ -152,14 +180,24 @@ function handleFiles(files) {
         fileSize.textContent = formatFileSize(pdfFiles[0].size);
         fileInfo.style.display = 'block';
         fileInfo.classList.add('show');
+
+        // 🧠 AI suggestion for quality mode
+        const sizeMB = pdfFiles[0].size / (1024 * 1024);
+        if (sizeMB > 15) {
+            showToast('AI Suggests: Use Medium or High Compression for this large PDF.', 'info');
+        } else if (sizeMB > 5) {
+            showToast('AI Suggests: Medium compression balances quality and size.', 'info');
+        } else {
+            showToast('AI Suggests: Low compression keeps best clarity.', 'info');
+        }
     }
 
-    // ✅ Always reveal quality + swipe again
     qualitySection.style.display = 'block';
     swipeContainer.style.display = 'block';
     qualitySection.classList.add('show');
     swipeContainer.classList.add('show');
 }
+
 
 
 function displayFileList() {
@@ -331,7 +369,12 @@ async function compressPDFWithBackend(file, quality) {
         formData.append('pdf', file);
         formData.append('quality', quality);
 
-        updateProgress(40, 'Compressing with Ghostscript...');
+        // 🧠 Start compression
+        // 🍗 Cooking-style progress messages
+        updateProgress(40, 'Marinating your PDF with secret AI spices...');
+        showToast('Our AI chef is marinating your PDF 🍗', 'info');
+
+        // 📨 Actual backend request
         const response = await fetch(`${API_URL}/compress`, {
             method: 'POST',
             body: formData
@@ -342,15 +385,25 @@ async function compressPDFWithBackend(file, quality) {
             throw new Error(errorData.message || 'Compression failed');
         }
 
-        updateProgress(80, 'Downloading compressed file...');
+        // 🔥 Continue progress
+        setTimeout(() => {
+            updateProgress(60, 'Grilling your file to crispy perfection...');
+        }, 1000);
+
+        updateProgress(80, 'Cooling and plating your crispy file...');
+        showToast('Cooling your crispy file before serving 😋', 'info');
+
+        // 📦 Handle response
         const compressedBlob = await response.blob();
         compressedBlobs = [{ name: file.name, blob: compressedBlob }];
 
         const compressedSizeBytes = compressedBlob.size;
         const savedPercentValue = Math.floor(((originalSizeBytes - compressedSizeBytes) / originalSizeBytes) * 100);
 
+        // ✅ Final result
         updateProgress(100, 'Complete!');
         setTimeout(() => {
+            showToast('Done — your crispy PDF is ready to serve!', 'success');
             progressSection.classList.remove('show');
             resultSection.classList.add('show');
             originalSize.textContent = formatFileSize(originalSizeBytes);
@@ -363,6 +416,7 @@ async function compressPDFWithBackend(file, quality) {
         resetApp();
     }
 }
+
 
 function updateProgress(percent, message) {
     progressFill.style.width = percent + '%';

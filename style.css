@@ -107,6 +107,25 @@ body {
     height: 40px;
     width: 40px;
 }
+/* Light mode toggle colors */
+[data-theme="light"] .theme-toggle {
+  background-color: #f1f1f1; /* light gray circle */
+  color: #111; /* dark icon */
+  border: 1px solid #ddd;
+}
+
+/* Dark mode toggle colors */
+[data-theme="dark"] .theme-toggle {
+  background-color: #111a2b; /* deep navy */
+  color: #fff; /* white icon */
+  border: 1px solid #334;
+}
+
+/* Optional hover effects for polish */
+.theme-toggle:hover {
+  background-color: var(--color-primary);
+  color: #ea215f;
+}
 
 
 .nav {
@@ -829,4 +848,25 @@ body {
 
 .modal-body p {
     margin-bottom: 12px;
+}
+/* === AI Processing Animation === */
+.ai-processing {
+    display: none;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 16px;
+    color: var(--color-primary);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    animation: fadeIn 0.4s ease forwards;
+}
+
+.ai-processing i {
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
 }

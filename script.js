@@ -263,9 +263,11 @@ resetBtn.addEventListener('click', () => {
     qualitySection.classList.remove('show');
     if (swipeContainer) {
         swipeContainer.classList.remove('show');
+        swipeContainer.style.display = 'block';
         swipeButton.style.left = '4px';
         swipeButton.style.pointerEvents = 'auto';
         swipeButton.classList.remove('completed');
+        swipeButton.style.transition = 'all 0.3s ease';
     }
     progressSection.classList.remove('show');
     resultSection.classList.remove('show');

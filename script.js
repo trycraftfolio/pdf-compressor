@@ -1,5 +1,5 @@
 // Backend API URL - Update this when you deploy backend
-const API_URL = 'https://pdf-compressor-backend-uvv5.onrender.com';
+const API_URL = 'https://pdf-compressor-backend-f2xj.onrender.com';
 
 let selectedFile = null;
 let compressedBlob = null;

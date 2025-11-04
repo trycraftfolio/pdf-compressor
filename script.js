@@ -290,31 +290,37 @@ async function compressMultiplePDFs(quality) {
 
     progressText.textContent = 'Preparing files...';
 
-    for (let i = 0; i < selectedFiles.length; i++) {
-        const file = selectedFiles[i];
-        const percent = Math.round((i / selectedFiles.length) * 100);
-        updateProgress(percent, `Compressing "${file.name}" (${i + 1}/${selectedFiles.length})`);
+    // Run all compressions in parallel for faster bulk processing
+const compressTasks = selectedFiles.map(async (file, i) => {
+    updateProgress((i / selectedFiles.length) * 100, `Compressing "${file.name}" (${i + 1}/${selectedFiles.length})`);
 
-        try {
-            const formData = new FormData();
-            formData.append('pdf', file);
-            formData.append('quality', quality);
+    const formData = new FormData();
+    formData.append('pdf', file);
+    formData.append('quality', quality);
 
-            const response = await fetch(`${API_URL}/compress`, {
-                method: 'POST',
-                body: formData
-            });
+    const response = await fetch(`${API_URL}/compress`, { method: 'POST', body: formData });
+    if (!response.ok) throw new Error(`Failed: ${file.name}`);
+    const blob = await response.blob();
 
-            if (!response.ok) throw new Error(`Failed: ${file.name}`);
-            const blob = await response.blob();
+    return { name: file.name, blob, size: file.size };
+});
 
-            compressedBlobs.push({ name: file.name, blob });
-            totalOriginalSize += file.size;
-            totalCompressedSize += blob.size;
-        } catch (err) {
-            showToast(`Error compressing ${file.name}`, 'error');
-        }
+// Wait for all compressions to finish (even if some fail)
+const results = await Promise.allSettled(compressTasks);
+
+// Collect successful results
+for (const r of results) {
+    if (r.status === 'fulfilled') {
+        const safeName = r.value.name.replace(/\s+/g, '_');
+        compressedBlobs.push({ name: safeName, blob: r.value.blob });
+        totalOriginalSize += r.value.size;
+        totalCompressedSize += r.value.blob.size;
+    } else {
+        console.error(r.reason);
+        showToast(`Error compressing ${r.reason.message || 'one file'}`, 'error');
     }
+}
+
 
     // After all files processed
     updateProgress(100, 'Packaging ZIP file...');

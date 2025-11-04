@@ -4,7 +4,6 @@ let compressedBlobs = [];
 let isDragging = false;
 let startX = 0;
 let currentX = 0;
-let isBulkMode = false;
 
 const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('fileInput');
@@ -23,7 +22,6 @@ const compressedSize = document.getElementById('compressedSize');
 const savedPercent = document.getElementById('savedPercent');
 const downloadBtn = document.getElementById('downloadBtn');
 const resetBtn = document.getElementById('resetBtn');
-const bulkModeCheckbox = document.getElementById('bulkMode');
 const fileList = document.getElementById('fileList');
 const themeToggle = document.getElementById('themeToggle');
 const themeIcon = document.getElementById('themeIcon');
@@ -81,15 +79,10 @@ function updateLogo(theme) {
     logoImage.src = theme === 'dark' ? 'assets/logo-dark.webp' : 'assets/logo-light.webp';
 }
 
-// Bulk mode toggle
-bulkModeCheckbox.addEventListener('change', (e) => {
-    isBulkMode = e.target.checked;
-    fileInput.value = ''; // reset to allow new selection
-    fileInput.multiple = isBulkMode;
-    resetApp();
-});
+// Logo reloads page
+logoImage?.addEventListener('click', () => window.location.reload());
 
-// Modal functionality
+// Modals
 const privacyModal = document.getElementById('privacyModal');
 const termsModal = document.getElementById('termsModal');
 const privacyLink = document.getElementById('privacyLink');
@@ -97,14 +90,8 @@ const termsLink = document.getElementById('termsLink');
 const closePrivacy = document.getElementById('closePrivacy');
 const closeTerms = document.getElementById('closeTerms');
 
-privacyLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    privacyModal.classList.add('show');
-});
-termsLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    termsModal.classList.add('show');
-});
+privacyLink.addEventListener('click', (e) => { e.preventDefault(); privacyModal.classList.add('show'); });
+termsLink.addEventListener('click', (e) => { e.preventDefault(); termsModal.classList.add('show'); });
 closePrivacy.addEventListener('click', () => privacyModal.classList.remove('show'));
 closeTerms.addEventListener('click', () => termsModal.classList.remove('show'));
 window.addEventListener('click', (e) => {
@@ -115,10 +102,7 @@ window.addEventListener('click', (e) => {
 // File handling
 uploadArea.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
-uploadArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadArea.classList.add('dragover');
-});
+uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
 uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
 uploadArea.addEventListener('drop', (e) => {
     e.preventDefault();
@@ -143,21 +127,20 @@ function handleFiles(files) {
 
     if (pdfFiles.length === 0) return;
     uploadArea.style.display = 'none';
+    selectedFiles = pdfFiles;
 
-    if (isBulkMode) {
-        selectedFiles = [...pdfFiles];
+    if (pdfFiles.length > 1) {
+        // Multiple PDFs
         displayFileList();
-        fileInfo.style.display = 'none';
-        qualitySection.style.display = 'block';
-        swipeContainer.style.display = 'block';
     } else {
-        selectedFiles = [pdfFiles[0]];
-        fileName.textContent = pdfFiles[0].name;
-        fileSize.textContent = formatFileSize(pdfFiles[0].size);
+        // Single PDF
+        const file = pdfFiles[0];
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
         fileInfo.style.display = 'block';
         fileInfo.classList.add('show');
 
-        const sizeMB = pdfFiles[0].size / (1024 * 1024);
+        const sizeMB = file.size / (1024 * 1024);
         if (sizeMB > 15) showToast('AI Suggests: Use Medium or High Compression for this large PDF.');
         else if (sizeMB > 5) showToast('AI Suggests: Medium compression balances quality and size.');
         else showToast('AI Suggests: Low compression keeps best clarity.');
@@ -256,33 +239,30 @@ if (swipeButton) {
     window.addEventListener('resize', initSwipe);
 }
 
-// Start compression (handles single & bulk)
+// Start compression (auto-detects single/multiple)
 async function startCompression() {
     if (selectedFiles.length === 0) return;
     const quality = document.querySelector('input[name="quality"]:checked').value;
 
-    // Hide input sections
     uploadArea.style.display = 'none';
     fileInfo.style.display = 'none';
     fileList.style.display = 'none';
     swipeContainer.style.display = 'none';
     qualitySection.style.display = 'none';
 
-    // Show progress section
     progressSection.style.display = 'block';
     progressSection.classList.add('show');
     progressFill.style.width = '0%';
     progressText.textContent = 'Initializing compression...';
 
-    if (isBulkMode) {
+    if (selectedFiles.length > 1) {
         await compressMultiplePDFs(quality);
     } else {
         await compressPDFWithBackend(selectedFiles[0], quality);
     }
 }
 
-
-// Bulk compression with proper progress + result UI
+// Parallel bulk compression
 async function compressMultiplePDFs(quality) {
     compressedBlobs = [];
     let totalOriginalSize = 0;
@@ -290,43 +270,32 @@ async function compressMultiplePDFs(quality) {
 
     progressText.textContent = 'Preparing files...';
 
-    // Run all compressions in parallel for faster bulk processing
-const compressTasks = selectedFiles.map(async (file, i) => {
-    updateProgress((i / selectedFiles.length) * 100, `Compressing "${file.name}" (${i + 1}/${selectedFiles.length})`);
+    const compressTasks = selectedFiles.map(async (file, i) => {
+        updateProgress((i / selectedFiles.length) * 100, `Compressing "${file.name}" (${i + 1}/${selectedFiles.length})`);
+        const formData = new FormData();
+        formData.append('pdf', file);
+        formData.append('quality', quality);
+        const response = await fetch(`${API_URL}/compress`, { method: 'POST', body: formData });
+        if (!response.ok) throw new Error(`Failed: ${file.name}`);
+        const blob = await response.blob();
+        return { name: file.name.replace(/\s+/g, '_'), blob, size: file.size };
+    });
 
-    const formData = new FormData();
-    formData.append('pdf', file);
-    formData.append('quality', quality);
-
-    const response = await fetch(`${API_URL}/compress`, { method: 'POST', body: formData });
-    if (!response.ok) throw new Error(`Failed: ${file.name}`);
-    const blob = await response.blob();
-
-    return { name: file.name, blob, size: file.size };
-});
-
-// Wait for all compressions to finish (even if some fail)
-const results = await Promise.allSettled(compressTasks);
-
-// Collect successful results
-for (const r of results) {
-    if (r.status === 'fulfilled') {
-        const safeName = r.value.name.replace(/\s+/g, '_');
-        compressedBlobs.push({ name: safeName, blob: r.value.blob });
-        totalOriginalSize += r.value.size;
-        totalCompressedSize += r.value.blob.size;
-    } else {
-        console.error(r.reason);
-        showToast(`Error compressing ${r.reason.message || 'one file'}`, 'error');
+    const results = await Promise.allSettled(compressTasks);
+    for (const r of results) {
+        if (r.status === 'fulfilled') {
+            compressedBlobs.push({ name: r.value.name, blob: r.value.blob });
+            totalOriginalSize += r.value.size;
+            totalCompressedSize += r.value.blob.size;
+        } else {
+            console.error(r.reason);
+            showToast(`Error compressing ${r.reason.message || 'one file'}`, 'error');
+        }
     }
-}
 
-
-    // After all files processed
     updateProgress(100, 'Packaging ZIP file...');
     const savedPercentValue = Math.floor(((totalOriginalSize - totalCompressedSize) / totalOriginalSize) * 100);
 
-    // Wait a moment for polish
     setTimeout(() => {
         progressSection.classList.remove('show');
         progressSection.style.display = 'none';
@@ -336,13 +305,12 @@ for (const r of results) {
         originalSize.textContent = formatFileSize(totalOriginalSize);
         compressedSize.textContent = formatFileSize(totalCompressedSize);
         savedPercent.textContent = Math.max(0, savedPercentValue) + '%';
-        showToast('All PDFs compressed successfully! Click “Download ZIP” to save.', 'success');
+        showToast(`${selectedFiles.length} PDFs compressed successfully! Click “Download ZIP” to save.`, 'success');
 
-        // Prepare manual ZIP download
         downloadBtn.onclick = async () => {
             const zip = new JSZip();
             compressedBlobs.forEach(item => zip.file('compressed_' + item.name, item.blob));
-           const zipBlob = await zip.generateAsync({ type: 'blob', mimeType: 'application/zip' });
+            const zipBlob = await zip.generateAsync({ type: 'blob', mimeType: 'application/zip' });
             const url = URL.createObjectURL(zipBlob);
             const a = document.createElement('a');
             a.href = url;
@@ -355,8 +323,7 @@ for (const r of results) {
     }, 600);
 }
 
-
-
+// Single PDF compression
 async function compressPDFWithBackend(file, quality) {
     try {
         updateProgress(20, 'Uploading PDF...');
@@ -369,10 +336,7 @@ async function compressPDFWithBackend(file, quality) {
         showToast('Our AI chef is marinating your PDF 🍗');
 
         const response = await fetch(`${API_URL}/compress`, { method: 'POST', body: formData });
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Compression failed');
-        }
+        if (!response.ok) throw new Error('Compression failed');
 
         updateProgress(80, 'Cooling and plating your crispy file...');
         const compressedBlob = await response.blob();
@@ -381,36 +345,46 @@ async function compressPDFWithBackend(file, quality) {
         const compressedSizeBytes = compressedBlob.size;
         const savedPercentValue = Math.floor(((originalSizeBytes - compressedSizeBytes) / originalSizeBytes) * 100);
 
-        updateProgress(100, 'Complete!');
-        setTimeout(() => {
-            showToast('Done — your crispy PDF is ready to serve!', 'success');
-            progressSection.classList.remove('show');
-            resultSection.classList.add('show');
-            originalSize.textContent = formatFileSize(originalSizeBytes);
-            compressedSize.textContent = formatFileSize(compressedSizeBytes);
-            savedPercent.textContent = Math.max(0, savedPercentValue) + '%';
-        }, 500);
+       updateProgress(100, 'Complete!');
+
+// Show results after a short delay
+setTimeout(() => {
+    showToast('Done — your crispy PDF is ready to serve!', 'success');
+
+    // Hide progress section
+    progressSection.classList.remove('show');
+    progressSection.style.display = 'none';
+
+    // ✅ Show result section properly
+    resultSection.style.display = 'block';
+    resultSection.classList.add('show');
+
+    // Fill in size data
+    originalSize.textContent = formatFileSize(originalSizeBytes);
+    compressedSize.textContent = formatFileSize(compressedSizeBytes);
+    savedPercent.textContent = Math.max(0, savedPercentValue) + '%';
+}, 500);
+
     } catch (error) {
         console.error('Compression error:', error);
-        alert('Error compressing PDF:\n\n' + error.message + '\n\nMake sure backend is running at ' + API_URL);
+        alert('Are you sure want to Refresh?');
         resetApp();
     }
 }
 
+// Helpers
 function updateProgress(percent, message) {
     progressFill.style.width = percent + '%';
     progressText.textContent = message + ' ' + Math.floor(percent) + '%';
-    progressText.classList.add('ai-dots');
-
 }
 
 downloadBtn.addEventListener('click', async () => {
     if (compressedBlobs.length === 0) return;
 
-    if (isBulkMode && compressedBlobs.length > 1) {
+    if (compressedBlobs.length > 1) {
         const zip = new JSZip();
         compressedBlobs.forEach(item => zip.file('compressed_' + item.name, item.blob));
-        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        const zipBlob = await zip.generateAsync({ type: 'blob', mimeType: 'application/zip' });
         const url = URL.createObjectURL(zipBlob);
         const a = document.createElement('a');
         a.href = url;
@@ -435,22 +409,57 @@ downloadBtn.addEventListener('click', async () => {
 resetBtn.addEventListener('click', resetApp);
 
 function resetApp() {
+    // Clear data and inputs
     selectedFiles = [];
     compressedBlobs = [];
     fileInput.value = '';
 
-    [fileInfo, fileList, qualitySection, swipeContainer, progressSection, resultSection].forEach(el => {
+    // Hide and clear content sections
+    [fileInfo, fileList, progressSection, resultSection].forEach(el => {
         el.style.display = 'none';
         el.classList.remove('show');
     });
 
-    uploadArea.style.display = 'block';
-    swipeButton.style.left = '4px';
-    swipeButton.style.pointerEvents = 'auto';
-    swipeButton.classList.remove('completed');
+    // Clear text
+    if (fileName) fileName.textContent = '';
+    if (fileSize) fileSize.textContent = '';
+    if (fileList) fileList.innerHTML = '';
+
+    // Reset progress visuals
     progressFill.style.width = '0%';
     progressText.textContent = '';
+
+    // Reset swipe button
+    if (swipeButton) {
+        swipeButton.style.left = '4px';
+        swipeButton.style.pointerEvents = 'auto';
+        swipeButton.classList.remove('completed');
+    }
+
+    // Restore initial upload UI
+    uploadArea.style.display = 'block';
+    uploadArea.classList.remove('dragover');
+
+    // Ensure sections start hidden (they will show after next upload)
+    qualitySection.style.display = 'none';
+    qualitySection.classList.remove('show');
+    swipeContainer.style.display = 'none';
+    swipeContainer.classList.remove('show');
+
+    // 🔥 Force reset of layout so handleFiles() can show again
+    requestAnimationFrame(() => {
+        uploadArea.offsetHeight; // trigger reflow
+        qualitySection.removeAttribute('style');
+        swipeContainer.removeAttribute('style');
+    });
+
+    // Clear old toast messages
+    if (toastContainer) toastContainer.innerHTML = '';
+
+    // Show a subtle ready toast
+    showToast('Ready to compress a new PDF 📄', 'info');
 }
+
 
 function formatFileSize(bytes) {
     if (bytes === 0) return '0 Bytes';
